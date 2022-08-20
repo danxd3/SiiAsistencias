@@ -85,6 +85,42 @@ namespace CDatos
             return resultado;
         }
 
+        // Agregar observación
+        //public int  DAgregarObservacionReturnId(DObservaciones objObservacion)
+        //{
+        //    int resultado = -1;
+        //    MySqlConnection sqlcon = new MySqlConnection();
+
+        //    try
+        //    {
+        //        using (var conexion = CreaConexion(OpConexion))
+        //        {
+        //            conexion.Open();
+        //            using (var sqlcmd = new MySqlCommand())
+        //            {
+        //                sqlcmd.Connection = conexion;
+        //                sqlcmd.CommandText = "SP_Insertar_Observaciones";
+        //                sqlcmd.CommandType = CommandType.StoredProcedure;
+        //                sqlcmd.Parameters.AddWithValue("xidobservacion", objObservacion.Idobservaciones).Direction = ParameterDirection.Output;
+        //                sqlcmd.Parameters.Add("xgeneral", MySqlDbType.Int32).Value = objObservacion.General;
+        //                sqlcmd.Parameters.Add("xcodigo", MySqlDbType.VarChar).Value = objObservacion.Codigo;
+        //                sqlcmd.Parameters.Add("xfecha", MySqlDbType.Date).Value = objObservacion.Fecha;
+        //                sqlcmd.Parameters.Add("xobservacion", MySqlDbType.VarChar).Value = objObservacion.Observacion;
+        //                sqlcmd.Parameters.Add("xidsucursal", MySqlDbType.VarChar).Value = objObservacion.Idsucursal;
+
+        //                resultado = sqlcmd.ExecuteNonQuery() == 1 ? (int)sqlcmd.LastInsertedId : -1;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        resultado = -1;
+        //    }
+        //    finally { if (sqlcon.State == ConnectionState.Open) sqlcon.Close(); }
+        //    return resultado;
+        //}
+
+
         // Mostrar observaciones
         public DataTable DMostrarObservaciones(DObservaciones objObservacion)
         {

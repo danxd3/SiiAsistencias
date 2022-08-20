@@ -100,6 +100,7 @@
     <Compile Include="DEmpleados.cs" />
     <Compile Include="DHorarios.cs" />
     <Compile Include="DHuellas.cs" />
+    <Compile Include="DInacistencia.cs" />
     <Compile Include="DIniciasys.cs" />
     <Compile Include="DObservaciones.cs" />
     <Compile Include="DRegistros.cs" />

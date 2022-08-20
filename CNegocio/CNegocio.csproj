@@ -49,6 +49,7 @@
     <Compile Include="NEmpleados.cs" />
     <Compile Include="NHorarios.cs" />
     <Compile Include="NHuellas.cs" />
+    <Compile Include="NInasistencia.cs" />
     <Compile Include="NIniciasys.cs" />
     <Compile Include="NObservaciones.cs" />
     <Compile Include="NRegistros.cs" />

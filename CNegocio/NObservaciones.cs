@@ -25,6 +25,22 @@ namespace CNegocio
             return objObservacion.DAgregarObservacion(objObservacion);
         }
 
+        // Agregar
+        //public static int NAgregarObservacionReturnId( string pcodigo, DateTime pfecha, string pobservacion,
+        //    int pidsucursal, int popconexion)
+        //{
+        //    DObservaciones objObservacion = new DObservaciones();
+        //    //Se coloa 0 por que es una observacion para empleado especifico
+        //    objObservacion.General = 0;
+        //    objObservacion.Codigo = pcodigo;
+        //    objObservacion.Fecha = pfecha;
+        //    objObservacion.Observacion = pobservacion;
+        //    objObservacion.Idsucursal = pidsucursal;
+        //    objObservacion.OpConexion = popconexion;
+
+        //    return objObservacion.DAgregarObservacionReturnId(objObservacion);
+        //}
+
         // Mostrar observaciones
         public static DataTable NMostrarObservaciones(int popcion, DateTime pfechaini, DateTime pfechafin, int pidsucursal,
             int popconexion)

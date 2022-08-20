@@ -21,22 +21,12 @@ namespace CPresentacion
         private int ConexionExt = 2;        // Conexion externa
         private string resultadoSQL = "";   // Resultado de las consultas
 
-        public frmSubAreas(DataTable pdtuser)
-        {
-            InitializeComponent();
-            dtpFechaini.Value = DateTime.Today;
-            //dtpFechafin.Value = DateTime.Today;
-            sucursalactual = principal.sucursalactual;
-            idsucursalactual = principal.idsucursalactual;
-            dtUserLogeado = pdtuser;
-        }
-
         frmPrincipal principal = new frmPrincipal();
         private string sucursalactual = string.Empty;
         private int idsucursalactual = 0;
         public DataTable dtUserLogeado = new DataTable();
         private DataTable dtAuxEmpleadosGral = new DataTable();
-
+        private DataTable dtEmpleadosCInasistencias = new DataTable();
 
         //private int ConexionLoc = 1;
         //private int ConexionExt = 2;
@@ -48,6 +38,18 @@ namespace CPresentacion
         private int variddepto;
         private int varidsucursal;
         private string varcodigo;
+
+        public frmSubAreas(DataTable pdtuser)
+        {
+            InitializeComponent();
+            dtpFechaini.Value = DateTime.Today;
+            //dtpFechafin.Value = DateTime.Today;
+            sucursalactual = principal.sucursalactual;
+            idsucursalactual = principal.idsucursalactual;
+            dtUserLogeado = pdtuser;
+        }
+
+    
 
         private void frmSubAreas_Load(object sender, EventArgs e)
         {
@@ -382,7 +384,12 @@ namespace CPresentacion
 
             DataTable dt = NEmpleados.NMostrarEmpleadosDetalles(3, 1, 1, pidsucursal, "", "", 1, 1, ConexionLoc);
 
-         
+            //Seteo de combobox con los datos de las subareas
+            var combobox = (DataGridViewComboBoxColumn)dgvInasistencias.Columns["SubareaInas"];
+            combobox.DisplayMember = "nombre";
+            combobox.ValueMember = "id";
+            combobox.DataSource = GetSubAreas();
+
             //Remover empleados a fin de dejar los que tienen inacistencia
             for (int i = dt.Rows.Count - 1; i >= 0; i--)
             {
@@ -401,6 +408,33 @@ namespace CPresentacion
 
                 
             }
+            int diaSemana = (int)DateTime.Now.DayOfWeek;
+            int valor;
+            dtEmpleadosCInasistencias = dt;
+            //
+           
+            foreach(DataRow  row in dt.Rows)
+            {
+                if (diaSemana.ToString() == row["descansos"].ToString())
+                {
+                    valor = 2;
+                }
+                else
+                {
+                    valor = 6;
+                }
+                dgvInasistencias.Rows.Add(row["codigo"].ToString(), row["nombrecompleto"].ToString(),valor, row["depto"].ToString());
+
+            }
+
+            //foreach (DataRow row in dtAuxEmpleadosGral.Rows)
+            //{
+            //    if (row["codigo"].ToString() == cbxEmpleados.SelectedValue.ToString())
+            //    {
+            //        depto = row["depto"].ToString();
+            //    }
+            //}
+            //dgvPrueba.Rows.Add(cbxEmpleados.SelectedValue, cbxEmpleados.Text, cbInacistencias.SelectedValue, depto);
 
 
             DataView dv = dt.DefaultView;
@@ -547,6 +581,8 @@ namespace CPresentacion
                 Color colorInasistencias = ColorTranslator.FromHtml("#FC4762");
                 //Color encargados 20B0E6
                 Color colorEncargados = ColorTranslator.FromHtml("#20B0E6");
+                //Color otros deptos
+                Color colorOtrosDeptos= ColorTranslator.FromHtml("#79EAFC");
                 //Color total areas FFA76A
                 Color colorTotalAreas = ColorTranslator.FromHtml("#FFA76A");
 
@@ -651,18 +687,25 @@ namespace CPresentacion
                     }
 
                 }
+                foreach(DataRow row in dtEmpleadosCInasistencias.Rows)
+                {
+                    excel.Cells[indiceFila, "D"] = "NO-ASIGANDO";
+                    excel.Cells[indiceFila, "E"] = row["nombrecompleto"].ToString();
+                    indiceFila++;
+                }
+
                 //guardamos el renglon donde nos quedamos
                 guardaFinFila = indiceFila;
                 //Primera seccion
                 indiceFila = iniciaReporte1seccion;
                 excel.Cells[indiceFila, "A"] = "CAJAS";
-                excel.Cells[indiceFila, "A"].Interior.Color = colorEncabezado;
-                excel.Cells[indiceFila, "B"].Interior.Color = colorEncabezado;
+                excel.Cells[indiceFila, "A"].Interior.Color = colorCaja;
+                excel.Cells[indiceFila, "B"].Interior.Color = colorCaja;
                 indiceFila++;
                 excel.Cells[indiceFila, "A"] = "SUBAREA";
-                excel.Cells[indiceFila, "A"].Interior.Color = colorSubEncabezado;
+                excel.Cells[indiceFila, "A"].Interior.Color = colorCaja;
                 excel.Cells[indiceFila, "B"] = "LISTA DE EMPLEADOS";
-                excel.Cells[indiceFila, "B"].Interior.Color = colorSubEncabezado;
+                excel.Cells[indiceFila, "B"].Interior.Color = colorCaja;
                 indiceFila++;
 
                 //Impresion del area de cajas
@@ -694,13 +737,13 @@ namespace CPresentacion
                 //Impresion del area de Piso de venta
                 indiceFila += 2;
                 excel.Cells[indiceFila, "A"] = "PISO DE VENTA";
-                excel.Cells[indiceFila, "A"].Interior.Color = colorEncabezado;
-                excel.Cells[indiceFila, "B"].Interior.Color = colorEncabezado;
+                excel.Cells[indiceFila, "A"].Interior.Color = colorPisoVenta;
+                excel.Cells[indiceFila, "B"].Interior.Color = colorPisoVenta;
                 indiceFila++;
                 excel.Cells[indiceFila, "A"] = "SUBAREA";
-                excel.Cells[indiceFila, "A"].Interior.Color = colorSubEncabezado;
+                excel.Cells[indiceFila, "A"].Interior.Color = colorPisoVenta;
                 excel.Cells[indiceFila, "B"] = "LISTA DE EMPLEADOS";
-                excel.Cells[indiceFila, "B"].Interior.Color = colorSubEncabezado;
+                excel.Cells[indiceFila, "B"].Interior.Color = colorPisoVenta;
                 indiceFila++;
                 foreach (DataRow row in dtInfo.Rows)
                 {
@@ -716,13 +759,13 @@ namespace CPresentacion
                 //Impresion del area de bodega
                 indiceFila += 2;
                 excel.Cells[indiceFila, "A"] = "BODEGA";
-                excel.Cells[indiceFila, "A"].Interior.Color = colorEncabezado;
-                excel.Cells[indiceFila, "B"].Interior.Color = colorEncabezado;
+                excel.Cells[indiceFila, "A"].Interior.Color = colorBodega;
+                excel.Cells[indiceFila, "B"].Interior.Color = colorBodega;
                 indiceFila++;
                 excel.Cells[indiceFila, "A"] = "SUBAREA";
-                excel.Cells[indiceFila, "A"].Interior.Color = colorSubEncabezado;
+                excel.Cells[indiceFila, "A"].Interior.Color = colorBodega;
                 excel.Cells[indiceFila, "B"] = "LISTA DE EMPLEADOS";
-                excel.Cells[indiceFila, "B"].Interior.Color = colorSubEncabezado;
+                excel.Cells[indiceFila, "B"].Interior.Color = colorBodega;
                 indiceFila++;
                 foreach (DataRow row in dtInfo.Rows)
                 {
@@ -749,13 +792,13 @@ namespace CPresentacion
                 //Seccion de encargados
                 indiceFila += 2;
                 excel.Cells[indiceFila, "D"] = "ENCARGADOS";
-                excel.Cells[indiceFila, "D"].Interior.Color = colorEncabezado;
-                excel.Cells[indiceFila, "E"].Interior.Color = colorEncabezado;
+                excel.Cells[indiceFila, "D"].Interior.Color = colorEncargados;
+                excel.Cells[indiceFila, "E"].Interior.Color = colorEncargados;
                 indiceFila++;
                 excel.Cells[indiceFila, "D"] = "PUESTO";
-                excel.Cells[indiceFila, "D"].Interior.Color = colorSubEncabezado;
+                excel.Cells[indiceFila, "D"].Interior.Color = colorEncargados;
                 excel.Cells[indiceFila, "E"] = "LISTA DE EMPLEADOS";
-                excel.Cells[indiceFila, "E"].Interior.Color = colorSubEncabezado;
+                excel.Cells[indiceFila, "E"].Interior.Color = colorEncargados;
                 indiceFila++;
                 foreach (DataRow row in dtInfo.Rows)
                 {
@@ -785,13 +828,13 @@ namespace CPresentacion
                 //Seccion de OTROS de departamentos
                 indiceFila += 2;
                 excel.Cells[indiceFila, "D"] = "OTROS DEPARTAMENTOS";
-                excel.Cells[indiceFila, "D"].Interior.Color = colorEncabezado;
-                excel.Cells[indiceFila, "E"].Interior.Color = colorEncabezado;
+                excel.Cells[indiceFila, "D"].Interior.Color = colorOtrosDeptos;
+                excel.Cells[indiceFila, "E"].Interior.Color = colorOtrosDeptos;
                 indiceFila++;
                 excel.Cells[indiceFila, "D"] = "DEPTO";
-                excel.Cells[indiceFila, "D"].Interior.Color = colorSubEncabezado;
+                excel.Cells[indiceFila, "D"].Interior.Color = colorOtrosDeptos;
                 excel.Cells[indiceFila, "E"] = "LISTA DE EMPLEADOS";
-                excel.Cells[indiceFila, "E"].Interior.Color = colorSubEncabezado;
+                excel.Cells[indiceFila, "E"].Interior.Color = colorOtrosDeptos;
                 indiceFila++;
                 //Se imprimen los demas departamentos a exepcion de estas areas
                 foreach (DataRow row in dtInfo.Rows)
@@ -886,11 +929,36 @@ namespace CPresentacion
         }
         private void GuardarEmpAreas_Click(object sender, EventArgs e)
         {
+            int idObser;
             //Mejorar  este proceso para validar todos los registros
             string resultado = "";
+            string resultado2 = "";
             foreach (DataGridViewRow row in dgvPrueba.Rows)
             {
                 resultado = NEmpleados.NEditarEmpleadoSubAreas(row.Cells["codigox"].Value.ToString(), Convert.ToInt32(row.Cells["Subareax"].Value), ConexionLoc);
+            }
+
+
+            foreach (DataGridViewRow row in dgvInasistencias.Rows)
+            {
+
+                if (row.Cells["ObservInas"].Value == null)
+                {
+                    resultado2 = NInasistencia.NAgregarInasistencia(row.Cells["codigoInas"].Value.ToString(), dtpFechaini.Value, dtpFechaini.Value, Convert.ToInt32(row.Cells["SubareaInas"].Value), idsucursalactual, "0", ConexionLoc);
+
+                }
+                else
+                {
+                    resultado2 = NInasistencia.NAgregarInasistencia(row.Cells["codigoInas"].Value.ToString(), dtpFechaini.Value, dtpFechaini.Value, Convert.ToInt32(row.Cells["SubareaInas"].Value), idsucursalactual, row.Cells["ObservInas"].Value.ToString(), ConexionLoc);
+
+                }
+
+
+
+
+
+
+                //resultado = NEmpleados.NEditarEmpleadoSubAreas(row.Cells["codigox"].Value.ToString(), Convert.ToInt32(row.Cells["Subareax"].Value), ConexionLoc);
             }
             if (resultado.Equals("ok")) this.MensajeOK("Se ingreso correctamente el registro");
             else this.MensajeError(resultado);
@@ -939,34 +1007,35 @@ namespace CPresentacion
             string codigo = cbxEmpleados.SelectedValue.ToString();
             string depto = "";
             bool existe = false;
-            foreach (DataGridViewRow row in dgvPrueba.Rows)
+            foreach (DataGridViewRow row in dgvInasistencias.Rows)
             {
                 if (row.Cells[0].Value.ToString() == codigo)
                 {
-                    existe = true;
+                    row.Cells[4].Value = tbExcepcion.Text.ToUpper();
+                    MensajeOK("Observacion guardada registrado");
                 }
             }
-            if (Convert.ToInt32(cbInacistencias.SelectedValue.ToString()) == 0)
-            {
-                MensajeError("Seleccione un estado valido");
-            }
-            else if (existe)
-            {
-                //MessageBox.Show("Empleado duplicado");
-                MensajeError("Empleado duplicado");
-            }
-            else { 
+        //    if (Convert.ToInt32(cbInacistencias.SelectedValue.ToString()) == 0)
+        //    {
+        //        MensajeError("Seleccione un estado valido");
+        //    }
+        //    else if (existe)
+        //    {
+        //        //MessageBox.Show("Empleado duplicado");
+        //        MensajeError("Empleado duplicado");
+        //    }
+        //    else { 
 
-                foreach (DataRow row in dtAuxEmpleadosGral.Rows)
-                {
-                    if (row["codigo"].ToString() == cbxEmpleados.SelectedValue.ToString())
-                    {
-                        depto = row["depto"].ToString();
-                    }
-                }
-            dgvPrueba.Rows.Add(cbxEmpleados.SelectedValue, cbxEmpleados.Text, cbInacistencias.SelectedValue, depto);
-            MensajeOK("Empleado registrado");
-        }
+        //        foreach (DataRow row in dtAuxEmpleadosGral.Rows)
+        //        {
+        //            if (row["codigo"].ToString() == cbxEmpleados.SelectedValue.ToString())
+        //            {
+        //                depto = row["depto"].ToString();
+        //            }
+        //        }
+        //    dgvPrueba.Rows.Add(cbxEmpleados.SelectedValue, cbxEmpleados.Text, cbInacistencias.SelectedValue, depto);
+        //    MensajeOK("Empleado registrado");
+        //}
 
     
         }
